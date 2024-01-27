@@ -15,7 +15,7 @@ type AbstractDisplay struct {
 	Display
 }
 
-func (d *AbstractDisplay) display() {
+func (d *AbstractDisplay) display() { // これがTemplate methodに位置する
 	d.open()
 	for i := 0; i < 5; i++ {
 		d.print()
@@ -60,7 +60,7 @@ type StringDisplay struct {
 	width int
 }
 
-var _ Display = (*StringDisplay)(nil) // CharDisplayはDisplayを満たす
+var _ Display = (*StringDisplay)(nil) // StringDisplayはDisplayを満たす
 
 func NewStringDisplay(s string) *StringDisplay {
 	a := &AbstractDisplay{}
