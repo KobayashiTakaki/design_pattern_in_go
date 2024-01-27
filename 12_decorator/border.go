@@ -103,3 +103,52 @@ func (b *FullBorder) Show() {
 		fmt.Println(t)
 	}
 }
+
+type UpDownBorder struct {
+	Border
+	ch string
+}
+
+var _ Display = (*UpDownBorder)(nil)
+
+func NewUpDownBorder(display Display, ch string) *UpDownBorder {
+	return &UpDownBorder{
+		Border: Border{
+			display: display,
+		},
+		ch: ch,
+	}
+}
+
+func (b *UpDownBorder) GetColumns() int {
+	return b.display.GetColumns()
+}
+
+func (b *UpDownBorder) GetRows() int {
+	// 行数は中身の行数に上下の飾り文字分を加えたもの
+	return 1 + b.display.GetRows() + 1
+}
+
+func (b *UpDownBorder) GetRowText(row int) (string, error) {
+	if row == 0 { // 上端の枠
+		return strings.Repeat(b.ch, b.display.GetColumns()), nil
+	} else if row == b.display.GetRows()+1 { // 下端の枠
+		return strings.Repeat(b.ch, b.display.GetColumns()), nil
+	} else { // それ以外
+		t, err := b.display.GetRowText(row - 1)
+		if err != nil {
+			return "", err
+		}
+		return t, nil
+	}
+}
+
+func (b *UpDownBorder) Show() {
+	for i := 0; i < b.GetRows(); i++ {
+		t, err := b.GetRowText(i)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(t)
+	}
+}
