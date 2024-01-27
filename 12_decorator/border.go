@@ -42,7 +42,7 @@ func (b *SideBorder) GetRowText(row int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// 指定業の内容は、中身の指定業の両側に飾りをつけたもの
+	// 指定行の内容は、中身の指定行の両側に飾りをつけたもの
 	return b.ch + t + b.ch, nil
 }
 
