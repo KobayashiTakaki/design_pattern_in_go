@@ -9,14 +9,41 @@ type Entry interface {
 	getName() string
 	getSize() int
 	printList(prefix string)
+	setParent(entry Entry)
+	getParent() Entry
+	printFullPath()
 }
 
 type AbstractEntry struct {
 	Entry
+	Parent Entry
 }
 
 func (e *AbstractEntry) String() string {
 	return e.getName() + " (" + strconv.Itoa(e.getSize()) + ")"
+}
+
+func (e *AbstractEntry) getParent() Entry {
+	return e.Parent
+}
+
+func (e *AbstractEntry) setParent(entry Entry) {
+	e.Parent = entry
+}
+
+func (e *AbstractEntry) printFullPath() {
+	var entry Entry = e
+	path := entry.getName()
+	for {
+		p := entry.getParent()
+		if p == nil {
+			path = "/" + path
+			break
+		}
+		path = p.getName() + "/" + path
+		entry = p
+	}
+	fmt.Println(path)
 }
 
 type File struct {
@@ -88,6 +115,7 @@ func (d *Directory) printList(prefix string) {
 }
 
 func (d *Directory) add(entry Entry) {
+	entry.setParent(d)
 	d.directory = append(d.directory, entry)
 }
 
@@ -115,7 +143,11 @@ func main() {
 	yuki.add(NewFile("diary.html", 100))
 	yuki.add(NewFile("Composite.java", 200))
 	hanako.add(NewFile("memo.tex", 300))
-	tomura.add(NewFile("game.doc", 400))
+	doc := NewFile("game.doc", 400)
+	tomura.add(doc)
 	tomura.add(NewFile("junk.mail", 500))
 	rootDir.printList("")
+
+	hanako.printFullPath()
+	doc.printFullPath()
 }
