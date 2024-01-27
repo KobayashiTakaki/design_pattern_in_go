@@ -84,7 +84,7 @@ func (d *MultiStringDisplay) GetRows() int {
 }
 
 func (d *MultiStringDisplay) GetRowText(row int) (string, error) {
-	if row > len(d.Lines) {
+	if row > len(d.Lines)-1 {
 		return "", errors.New("out of bounds")
 	}
 	// 行の長さが揃うように後ろにスペースを入れる
