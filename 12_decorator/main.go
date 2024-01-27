@@ -20,6 +20,7 @@ func main() {
 	)
 	b4.Show()
 	excecise121()
+	excecise122()
 }
 
 func excecise121() {
@@ -45,4 +46,19 @@ func excecise121() {
 		),
 	)
 	b4.Show()
+}
+
+func excecise122() {
+	md := NewMultiStringDisplay()
+
+	md.add("Hi!")
+	md.add("Good morning.")
+	md.add("Good night!")
+	md.Show()
+
+	d1 := NewSideBorder(md, "#")
+	d1.Show()
+
+	d2 := NewFullBorder(md)
+	d2.Show()
 }

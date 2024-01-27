@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type Display interface {
@@ -52,4 +53,55 @@ func (d *StringDisplay) Show() {
 		}
 		fmt.Println(t)
 	}
+}
+
+type MultiStringDisplay struct {
+	// 表示する複数行の文字列
+	Lines []string
+}
+
+var _ Display = (*MultiStringDisplay)(nil) // MultiStringDisplayはDisplayを満たす
+
+func NewMultiStringDisplay() *MultiStringDisplay {
+	return &MultiStringDisplay{
+		Lines: []string{},
+	}
+}
+
+func (d *MultiStringDisplay) GetColumns() int {
+	// すべての行の中で最大の文字数を返す
+	var maxLen int
+	for _, line := range d.Lines {
+		if maxLen < len(line) {
+			maxLen = len(line)
+		}
+	}
+	return maxLen
+}
+
+func (d *MultiStringDisplay) GetRows() int {
+	return len(d.Lines)
+}
+
+func (d *MultiStringDisplay) GetRowText(row int) (string, error) {
+	if row > len(d.Lines) {
+		return "", errors.New("out of bounds")
+	}
+	// 行の長さが揃うように後ろにスペースを入れる
+	pad := strings.Repeat(" ", d.GetColumns()-len(d.Lines[row]))
+	return d.Lines[row] + pad, nil
+}
+
+func (d *MultiStringDisplay) Show() {
+	for i := 0; i < d.GetRows(); i++ {
+		t, err := d.GetRowText(i)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(t)
+	}
+}
+
+func (d *MultiStringDisplay) add(s string) {
+	d.Lines = append(d.Lines, s)
 }
