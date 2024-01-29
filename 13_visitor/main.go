@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 )
 
@@ -117,6 +118,36 @@ func (v *ListVisitor) visitDirectory(d *Directory) {
 	v.currentDir = saveDir
 }
 
+type FileFindVisitor struct {
+	pattern    *regexp.Regexp
+	foundFiles []*File
+}
+
+var _ Visitor = (*FileFindVisitor)(nil)
+
+func NewFileFindVisitor(pattern string) *FileFindVisitor {
+	re := regexp.MustCompile(fmt.Sprintf(`%s$`, pattern))
+	return &FileFindVisitor{
+		pattern: re,
+	}
+}
+
+func (v *FileFindVisitor) visitFile(f *File) {
+	if v.pattern.MatchString(f.getName()) {
+		v.foundFiles = append(v.foundFiles, f)
+	}
+}
+
+func (v *FileFindVisitor) visitDirectory(d *Directory) {
+	for _, entry := range d.directory {
+		entry.accept(v)
+	}
+}
+
+func (v *FileFindVisitor) getFoundFiles() []*File {
+	return v.foundFiles
+}
+
 func main() {
 	fmt.Println("Making root entries...")
 	rootDir := NewDirectory("root")
@@ -144,4 +175,11 @@ func main() {
 	tomura.add(NewFile("game.doc", 400))
 	tomura.add(NewFile("junk.mail", 500))
 	rootDir.accept(NewListVisitor())
+
+	ffv := NewFileFindVisitor(".html")
+	rootDir.accept(ffv)
+	fmt.Println("HTML files are:")
+	for _, f := range ffv.getFoundFiles() {
+		fmt.Println(f.toString())
+	}
 }
